@@ -1,20 +1,30 @@
-node {
-    stage "Prepare environment"
-        checkout scm
-        def environment  = docker.build 'jenkins-setup-4-react-demo'
-
-        environment.inside {
-            stage "Checkout and build deps"
-                sh "npm install"
-
-            stage "Validate types"
-                sh "./node_modules/.bin/flow"
-
-            stage "Test and validate"
-                sh "npm install gulp-cli && ./node_modules/.bin/gulp"
-                junit 'reports/**/*.xml'
+pipeline {
+    agent {
+        docker {
+            image 'node:6-alpine'
+            args '-p 3000:3000'
         }
-
-    stage "Cleanup"
-        deleteDir()
+    }
+    environment {
+        CI = 'true'
+    }
+    stages {
+        stage('Build') {
+            steps {
+                sh 'npm install'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh './jenkins/scripts/test.sh'
+            }
+        }
+        stage('Deliver') {
+            steps {
+                sh './jenkins/scripts/deliver.sh'
+                input message: 'Finished using the web site? (Click "Proceed" to continue)'
+                sh './jenkins/scripts/kill.sh'
+            }
+        }
+    }
 }
