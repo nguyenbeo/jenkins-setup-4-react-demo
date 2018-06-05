@@ -14,16 +14,20 @@ pipeline {
                 sh 'npm install'
             }
         }
-        stage('Test') {
+        stage "Validate types" {
             steps {
-                sh './jenkins/scripts/test.sh'
+                sh "./node_modules/.bin/flow"
             }
         }
-        stage('Deliver') {
+        stage "Test and validate" {
             steps {
-                sh './jenkins/scripts/deliver.sh'
-                input message: 'Finished using the web site? (Click "Proceed" to continue)'
-                sh './jenkins/scripts/kill.sh'
+              sh "npm install gulp-cli && ./node_modules/.bin/gulp"
+              junit 'reports/**/*.xml'
+            }
+        }
+        stage "Cleanup" {
+            steps {
+                deleteDir()
             }
         }
     }
