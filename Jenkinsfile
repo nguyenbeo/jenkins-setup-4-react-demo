@@ -21,9 +21,9 @@ pipeline {
         }
         stage('Deliver') {
             steps {
-                sh 'npm start'
+                sh 'npm run build'
                 input message: 'Everything seems ok? Do you want to deploy in test? (Click "Proceed" to continue)'
-                sh 'docker --version'
+                sh 'npm help'
             }
         }
     }
