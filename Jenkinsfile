@@ -14,18 +14,18 @@ pipeline {
                 sh 'npm install'
             }
         }
-        stage "Validate types" {
+        stage('Validate types') {
             steps {
                 sh "./node_modules/.bin/flow"
             }
         }
-        stage "Test and validate" {
+        stage('Test and validate') {
             steps {
               sh "npm install gulp-cli && ./node_modules/.bin/gulp"
               junit 'reports/**/*.xml'
             }
         }
-        stage "Cleanup" {
+        stage('Cleanup') {
             steps {
                 deleteDir()
             }
